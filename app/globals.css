@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.tab {
+  @apply flex-shrink-0 text-[13px] font-medium px-3.5 py-2 rounded-[10px] border border-border bg-white text-inkSoft cursor-pointer whitespace-nowrap transition-colors;
+}
+.tab-active {
+  @apply bg-ink text-white border-ink;
+}
+.input {
+  @apply w-full border border-border rounded-[9px] px-3 py-2.5 text-sm outline-none focus:border-coral;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
