@@ -65,7 +65,7 @@ export default async function HomePage() {
     { data: contentProducts },
   ] = await Promise.all([
     supabase.from('categories').select('*').order('sort_order'),
-    supabase.from('products').select('*').order('rank'),
+    supabase.from('products').select('*').eq('active', true).order('rank'),
     supabase.from('site_settings').select('*'),
     supabase.from('product_images').select('*').order('rank'),
     supabase.from('contents').select('*').eq('active', true).order('rank'),
