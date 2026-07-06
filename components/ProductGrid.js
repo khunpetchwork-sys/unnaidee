@@ -10,7 +10,7 @@ export default function ProductGrid({ categories, products, displayMode = 'grid'
 
   return (
     <div>
-      <div className="flex gap-2 overflow-x-auto pb-1 mb-5 no-scrollbar">
+      <div className="flex flex-wrap gap-2 mb-5">
         <button onClick={() => setActive('all')} className={`tab ${active === 'all' ? 'tab-active' : ''}`}>
           ทั้งหมด
         </button>
