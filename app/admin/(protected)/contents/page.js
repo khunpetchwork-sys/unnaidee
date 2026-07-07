@@ -1,28 +1,32 @@
 import { createClient } from '@/lib/supabase/server';
-import ContentsTable from '@/components/admin/ContentsTable';
+import { getSettings } from '@/lib/actions/settings';
+import DashboardClient from '@/components/admin/DashboardClient';
 
 export const revalidate = 0;
 
-export default async function ContentsPage() {
+export default async function DashboardPage() {
   const supabase = createClient();
 
-  const [{ data: contents }, { data: products }, { data: contentProducts }] = await Promise.all([
-    supabase.from('contents').select('*').order('rank'),
-    supabase.from('products').select('id, name, image_url').order('name'),
-    supabase.from('content_products').select('*'),
+  const [
+    { data: clicks },
+    { data: pageViews },
+    { data: products },
+    settings,
+  ] = await Promise.all([
+    supabase.from('clicks').select('product_id, clicked_at, referrer').order('clicked_at', { ascending: false }),
+    supabase.from('page_views').select('visited_at').order('visited_at', { ascending: false }),
+    supabase.from('products').select('id, name').order('rank'),
+    getSettings(),
   ]);
 
-  const selectedByContent = {};
-  (contentProducts || []).forEach((cp) => {
-    if (!selectedByContent[cp.content_id]) selectedByContent[cp.content_id] = [];
-    selectedByContent[cp.content_id].push(cp.product_id);
-  });
-
   return (
-    <ContentsTable
-      contents={contents || []}
+    <DashboardClient
+      clicks={clicks || []}
+      pageViews={pageViews || []}
       products={products || []}
-      selectedByContent={selectedByContent}
+      displayMode={settings.display_mode || 'grid'}
+      headerStyle={settings.header_style || 'minimal'}
+      headerBannerUrl={settings.header_banner_url || ''}
     />
   );
 }
