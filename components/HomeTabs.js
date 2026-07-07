@@ -16,7 +16,7 @@ export default function HomeTabs({ categories, products, displayMode, imagesByPr
             tab === 'products' ? 'bg-white text-ink shadow-sm' : 'text-inkSoft'
           }`}
         >
-          🛍 สินค้า
+          🛍 สินค้าในช่อง
         </button>
         <button
           onClick={() => setTab('contents')}
@@ -24,7 +24,7 @@ export default function HomeTabs({ categories, products, displayMode, imagesByPr
             tab === 'contents' ? 'bg-white text-ink shadow-sm' : 'text-inkSoft'
           }`}
         >
-          🎬 คลิป
+          🎬 ไอเดียสำหรับคุณ
         </button>
       </div>
 
