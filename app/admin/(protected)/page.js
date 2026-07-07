@@ -25,6 +25,8 @@ export default async function DashboardPage() {
       pageViews={pageViews || []}
       products={products || []}
       displayMode={settings.display_mode || 'grid'}
+      headerStyle={settings.header_style || 'minimal'}
+      headerBannerUrl={settings.header_banner_url || ''}
     />
   );
 }
