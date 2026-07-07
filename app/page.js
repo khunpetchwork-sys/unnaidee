@@ -74,6 +74,8 @@ export default async function HomePage() {
 
   const settingsMap = Object.fromEntries((settings || []).map((r) => [r.key, r.value]));
   const displayMode = settingsMap.display_mode || 'grid';
+  const headerStyle = settingsMap.header_style || 'minimal';
+  const headerBannerUrl = settingsMap.header_banner_url || '';
 
   const imagesByProduct = {};
   (allProductImages || []).forEach((img) => {
@@ -93,33 +95,56 @@ export default async function HomePage() {
         <PageViewTracker />
       </Suspense>
 
-      <div className="text-center mb-7">
-        <div className="w-[72px] h-[72px] rounded-[20px] bg-ink text-white flex items-center justify-center font-display font-bold text-xl mx-auto mb-3.5 -rotate-3">
-          UD
+      {/* ── Header ── */}
+      {headerStyle === 'banner' && headerBannerUrl ? (
+        /* Banner style */
+        <div className="mb-6 -mx-5">
+          <div className="relative w-full" style={{ paddingBottom: '33.3%' }}>
+            <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: '#1C1B18' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={headerBannerUrl} alt="Unnaidee" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent flex items-end px-5 pb-4">
+                <div>
+                  <h1 className="font-display font-bold text-2xl text-white tracking-tight">Unnaidee</h1>
+                  <p className="text-white/70 text-xs mt-0.5">ของดีจาก Shopee ที่คัดมาให้แล้ว</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between px-5 mt-3">
+            <div className="flex items-center gap-2.5">
+              {SOCIALS.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" title={s.name}
+                  className="w-8 h-8 rounded-full border border-border flex items-center justify-center transition-all hover:scale-110"
+                  style={{ color: s.color }}>
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 border border-dashed border-coral rounded-full font-mono text-[10px] text-coral">
+              ✓ คัดสรรมาให้แล้ว
+            </div>
+          </div>
         </div>
-        <h1 className="font-display font-bold text-2xl tracking-tight">Unnaidee</h1>
-        <p className="text-inkSoft text-sm mt-1.5">ของดีจาก Shopee ที่คัดมาให้แล้ว</p>
-
-        <div className="flex items-center justify-center gap-3 mt-4">
-          {SOCIALS.map((s) => (
-            <a
-              key={s.name}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={s.name}
-              className="w-9 h-9 rounded-full border border-border flex items-center justify-center transition-all hover:scale-110"
-              style={{ color: s.color }}
-            >
-              {s.icon}
-            </a>
-          ))}
+      ) : (
+        /* Minimal style (default) */
+        <div className="text-center mb-7">
+          <h1 className="font-display font-bold text-3xl tracking-tight">Unnai<span className="text-coral">dee</span></h1>
+          <p className="text-inkSoft text-sm mt-1.5">ของดีจาก Shopee ที่คัดมาให้แล้ว</p>
+          <div className="flex items-center justify-center gap-3 mt-4">
+            {SOCIALS.map((s) => (
+              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" title={s.name}
+                className="w-9 h-9 rounded-full border border-border flex items-center justify-center transition-all hover:scale-110"
+                style={{ color: s.color }}>
+                {s.icon}
+              </a>
+            ))}
+          </div>
+          <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1 border border-dashed border-coral rounded-full font-mono text-[11px] text-coral -rotate-1">
+            ✓ คัดสรรมาให้แล้ว
+          </div>
         </div>
-
-        <div className="inline-flex items-center gap-1.5 mt-4 px-3 py-1 border border-dashed border-coral rounded-full font-mono text-[11px] text-coral -rotate-1">
-          ✓ คัดสรรมาให้แล้ว
-        </div>
-      </div>
+      )}
 
       <HomeTabs
         categories={categories || []}
