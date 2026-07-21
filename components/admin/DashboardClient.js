@@ -18,6 +18,20 @@ export default function DashboardClient({ clicks, pageViews, products, displayMo
   const todayClicks = clicks.filter((c) => c.clicked_at?.startsWith(today));
   const todayViews = pageViews.filter((v) => v.visited_at?.startsWith(today));
 
+  // ── pageviews รายวัน 14 วันล่าสุด ──
+  const viewByDay = {};
+  pageViews.forEach((v) => {
+    const day = v.visited_at?.split('T')[0];
+    if (day) viewByDay[day] = (viewByDay[day] || 0) + 1;
+  });
+  const last14Days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (13 - i));
+    const key = d.toISOString().split('T')[0];
+    return { key, label: `${d.getDate()}/${d.getMonth() + 1}`, count: viewByDay[key] || 0 };
+  });
+  const maxDay = Math.max(...last14Days.map((d) => d.count), 1);
+
   // top products by clicks
   const clickMap = {};
   clicks.forEach((c) => { if (c.product_id) clickMap[c.product_id] = (clickMap[c.product_id] || 0) + 1; });
@@ -201,7 +215,7 @@ export default function DashboardClient({ clicks, pageViews, products, displayMo
       )}
 
       {/* ── TOP PRODUCTS ── */}
-      <div className="grid sm:grid-cols-2 gap-5">
+      <div className="grid sm:grid-cols-2 gap-5 mb-5">
         <div className="bg-white border border-border rounded-2xl p-4">
           <div className="font-semibold text-sm mb-3">สินค้าที่คนกดมากสุด</div>
           {topProducts.length === 0 ? (
@@ -253,6 +267,55 @@ export default function DashboardClient({ clicks, pageViews, products, displayMo
               <span>00:00</span><span>12:00</span><span>23:00</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* ── PAGEVIEW HISTORY 14 วัน ── */}
+      <div className="bg-white border border-border rounded-2xl p-4">
+        <div className="font-semibold text-sm mb-1">ประวัติผู้เข้าชม (14 วันล่าสุด)</div>
+        <div className="text-xs text-inkSoft mb-4">จำนวนคนที่เปิดเว็บแต่ละวัน</div>
+        <div className="flex items-end gap-1.5 h-28">
+          {last14Days.map((d) => (
+            <div key={d.key} className="flex flex-col items-center gap-1 flex-1 group relative">
+              <div
+                className={`w-full rounded-sm transition-all ${d.key === today ? 'bg-coral' : 'bg-coral/40 hover:bg-coral/70'}`}
+                style={{ height: `${Math.max(Math.round((d.count / maxDay) * 96), d.count > 0 ? 4 : 0)}px` }}
+              />
+              {/* tooltip */}
+              <div className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 bg-ink text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                {d.count} คน
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-2 font-mono text-[9px] text-inkSoft">
+          <span>{last14Days[0]?.label}</span>
+          <span>{last14Days[6]?.label}</span>
+          <span>{last14Days[13]?.label}</span>
+        </div>
+
+        {/* ตารางรายวัน */}
+        <div className="mt-4 border border-border rounded-xl overflow-hidden">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="bg-bg border-b border-border">
+                <th className="text-left px-3 py-2 font-mono text-[10px] text-inkSoft uppercase">วันที่</th>
+                <th className="text-right px-3 py-2 font-mono text-[10px] text-inkSoft uppercase">ผู้เข้าชม</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...last14Days].reverse().map((d) => (
+                <tr key={d.key} className={`border-b border-border last:border-none ${d.key === today ? 'bg-coralDim' : ''}`}>
+                  <td className="px-3 py-2 text-inkSoft font-mono">
+                    {d.key === today ? `${d.key} (วันนี้)` : d.key}
+                  </td>
+                  <td className="px-3 py-2 text-right font-semibold">
+                    {d.count > 0 ? d.count.toLocaleString() : <span className="text-inkSoft">-</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
