@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import PageViewTracker from '@/components/PageViewTracker';
 import HomeTabs from '@/components/HomeTabs';
 
-export const revalidate = 0;
+export const revalidate = 60; // cache 60 วินาที — เร็วขึ้นมาก
 
 export const metadata = {
   title: 'Unnaidee — ของดีที่แนะนำ',
