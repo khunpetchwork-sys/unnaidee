@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import ProductDetailPopup from './ProductDetailPopup';
 
 export default function ProductCard({ product, categoryName, displayMode = 'grid', images = [] }) {
@@ -9,13 +10,6 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
   const hasDiscount = product.discount_price && product.price && product.discount_price < product.price;
   const displayPrice = hasDiscount ? product.discount_price : product.price;
   const clickHref = `/api/click?product=${product.id}&url=${encodeURIComponent(product.shopee_url)}`;
-
-  const squareImgWrap = {
-    position: 'relative', width: '100%', paddingBottom: '100%',
-    overflow: 'hidden', backgroundColor: '#E2EEEA',
-  };
-  const squareImgInner = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 };
-  const imgStyle = { width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' };
 
   if (displayMode === 'list') {
     return (
@@ -26,18 +20,14 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
             style={{ width: 56, height: 56, borderRadius: 8, overflow: 'hidden', flexShrink: 0, position: 'relative', backgroundColor: '#E2EEEA', border: '1px solid #E6E4DC', cursor: 'pointer' }}
           >
             {product.image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.image_url} alt={product.name} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <Image src={product.image_url} alt={product.name} fill sizes="56px" style={{ objectFit: 'cover' }} />
             ) : (
               <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>📦</span>
             )}
           </div>
           <div className="flex-1 min-w-0">
             {categoryName && <div className="font-mono text-[9px] uppercase tracking-wide text-inkSoft mb-0.5">{categoryName}</div>}
-            <div
-              onClick={() => setShowDetail(true)}
-              className="text-[13px] font-semibold leading-snug truncate cursor-pointer hover:text-coral transition-colors"
-            >
+            <div onClick={() => setShowDetail(true)} className="text-[13px] font-semibold leading-snug truncate cursor-pointer hover:text-coral transition-colors">
               {product.name}
             </div>
             <div className="flex items-center gap-1.5 mt-1">
@@ -47,10 +37,7 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
             </div>
           </div>
           <div className="flex flex-col gap-1 flex-shrink-0 items-end">
-            <button
-              onClick={() => setShowDetail(true)}
-              className="text-[9px] text-inkSoft hover:text-ink border border-border rounded-full px-2 py-0.5 transition-colors whitespace-nowrap"
-            >
+            <button onClick={() => setShowDetail(true)} className="text-[9px] text-inkSoft hover:text-ink border border-border rounded-full px-2 py-0.5 transition-colors whitespace-nowrap">
               ดูข้อมูล
             </button>
             <a href={clickHref} className="text-[10px] bg-ink text-white px-2.5 py-1 rounded-lg hover:bg-coral transition-colors whitespace-nowrap font-medium">
@@ -58,54 +45,44 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
             </a>
           </div>
         </div>
-        {showDetail && (
-          <ProductDetailPopup product={product} images={images} categoryName={categoryName} onClose={() => setShowDetail(false)} />
-        )}
+        {showDetail && <ProductDetailPopup product={product} images={images} categoryName={categoryName} onClose={() => setShowDetail(false)} />}
       </>
     );
   }
 
-  // ── GRID MODE ──
   return (
     <>
       <div className="bg-white border border-border rounded-2xl overflow-hidden flex flex-col">
-
-        {/* รูป + badge "ดูข้อมูล" มุมขวาบน */}
-        <div
-          onClick={() => setShowDetail(true)}
-          style={squareImgWrap}
-          className="cursor-pointer"
-        >
-          <div style={squareImgInner}>
+        <div onClick={() => setShowDetail(true)} className="relative cursor-pointer" style={{ paddingBottom: '100%' }}>
+          <div className="absolute inset-0 bg-tealDim overflow-hidden">
             {product.image_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={product.image_url} alt={product.name} style={imgStyle} />
+              <Image
+                src={product.image_url}
+                alt={product.name}
+                fill
+                sizes="(max-width: 640px) 50vw, 300px"
+                style={{ objectFit: 'cover' }}
+                priority={false}
+              />
             ) : (
-              <div style={{ ...squareImgInner, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40 }}>📦</div>
+              <div className="absolute inset-0 flex items-center justify-center text-4xl">📦</div>
             )}
 
             {hasDiscount && (
-              <span style={{ position: 'absolute', top: 8, left: 8, zIndex: 1 }} className="bg-ink text-white font-mono text-[10.5px] font-semibold px-1.5 py-0.5 rounded-md">
+              <span className="absolute top-2 left-2 z-10 bg-ink text-white font-mono text-[10.5px] font-semibold px-1.5 py-0.5 rounded-md">
                 -{Math.round((1 - product.discount_price / product.price) * 100)}%
               </span>
             )}
-
-            {/* badge "ดูข้อมูล" มุมขวาบน */}
-            <span
-              style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
-              className="bg-white/90 text-ink text-[9px] font-semibold px-2 py-1 rounded-full shadow-sm flex items-center gap-0.5"
-            >
+            <span className="absolute top-2 right-2 z-10 bg-white/90 text-ink text-[9px] font-semibold px-2 py-1 rounded-full shadow-sm">
               🔍 ดูข้อมูล
             </span>
-
             {product.is_hit && (
-              <span style={{ position: 'absolute', bottom: 6, right: 6, zIndex: 1 }} className="w-[40px] h-[40px] rounded-full border border-dashed border-coral flex items-center justify-center text-center font-mono text-[8px] text-coral font-semibold rotate-[9deg] bg-white/85 leading-tight">
+              <span className="absolute bottom-2 right-2 z-10 w-[40px] h-[40px] rounded-full border border-dashed border-coral flex items-center justify-center text-center font-mono text-[8px] text-coral font-semibold rotate-[9deg] bg-white/85 leading-tight">
                 ฮิต<br />ตอนนี้
               </span>
             )}
-
             {images.length > 1 && (
-              <span style={{ position: 'absolute', bottom: 6, left: 6, zIndex: 1 }} className="bg-ink/60 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-full">
+              <span className="absolute bottom-2 left-2 z-10 bg-ink/60 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-full">
                 🖼 {images.length}
               </span>
             )}
@@ -114,10 +91,7 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
 
         <div className="p-3 flex flex-col gap-2 flex-1">
           {categoryName && <div className="font-mono text-[10px] uppercase tracking-wide text-inkSoft">{categoryName}</div>}
-          <h3
-            onClick={() => setShowDetail(true)}
-            className="text-[13.5px] font-semibold leading-snug cursor-pointer hover:text-coral transition-colors"
-          >
+          <h3 onClick={() => setShowDetail(true)} className="text-[13.5px] font-semibold leading-snug cursor-pointer hover:text-coral transition-colors">
             {product.name}
           </h3>
           {displayPrice != null && (
@@ -131,10 +105,7 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
           </a>
         </div>
       </div>
-
-      {showDetail && (
-        <ProductDetailPopup product={product} images={images} categoryName={categoryName} onClose={() => setShowDetail(false)} />
-      )}
+      {showDetail && <ProductDetailPopup product={product} images={images} categoryName={categoryName} onClose={() => setShowDetail(false)} />}
     </>
   );
 }
