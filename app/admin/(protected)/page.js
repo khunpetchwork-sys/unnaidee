@@ -13,7 +13,7 @@ export default async function DashboardPage() {
     { data: products },
     settings,
   ] = await Promise.all([
-    supabase.from('clicks').select('product_id, clicked_at, referrer').order('clicked_at', { ascending: false }),
+    supabase.from('clicks').select('id, product_id, clicked_at, referrer').order('clicked_at', { ascending: false }),
     supabase.from('page_views').select('visited_at').order('visited_at', { ascending: false }),
     supabase.from('products').select('id, name').order('rank'),
     getSettings(),
