@@ -18,6 +18,16 @@ export default function DashboardClient({ clicks, pageViews, products, displayMo
   const todayClicks = clicks.filter((c) => c.clicked_at?.startsWith(today));
   const todayViews = pageViews.filter((v) => v.visited_at?.startsWith(today));
 
+  // ── ฟีดกิจกรรมวันนี้ — ใครกดอะไร กี่โมง ──
+  const productNameMap = Object.fromEntries(products.map((p) => [p.id, p.name]));
+  const todayFeed = [...todayClicks]
+    .sort((a, b) => new Date(b.clicked_at) - new Date(a.clicked_at))
+    .map((c) => ({
+      ...c,
+      productName: productNameMap[c.product_id] || 'สินค้าที่ถูกลบแล้ว',
+      time: new Date(c.clicked_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+    }));
+
   // ── pageviews รายวัน 14 วันล่าสุด ──
   const viewByDay = {};
   pageViews.forEach((v) => {
@@ -95,6 +105,39 @@ export default function DashboardClient({ clicks, pageViews, products, displayMo
         <Stat label="คลิกวันนี้" value={todayClicks.length.toLocaleString()} />
         <Stat label="ผู้เข้าชมวันนี้" value={todayViews.length.toLocaleString()} />
         <Stat label="สินค้าทั้งหมด" value={products.length.toLocaleString()} />
+      </div>
+
+      {/* ── ฟีดกิจกรรมวันนี้ ── */}
+      <div className="bg-white border border-border rounded-2xl p-4 mb-5">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <div className="font-semibold text-sm">วันนี้คนกดอะไรบ้าง</div>
+            <div className="text-xs text-inkSoft">เรียงจากล่าสุดไปเก่าสุด</div>
+          </div>
+          {todayFeed.length > 0 && (
+            <span className="bg-coralDim text-coral text-xs font-semibold px-2.5 py-1 rounded-full">
+              {todayFeed.length} คลิก
+            </span>
+          )}
+        </div>
+
+        {todayFeed.length === 0 ? (
+          <p className="text-inkSoft text-xs text-center py-6">ยังไม่มีคนกดวันนี้ — รอดูตอนคลิปเข้าคิว</p>
+        ) : (
+          <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto">
+            {todayFeed.map((c, i) => (
+              <div key={c.id || i} className="flex items-center gap-2.5 py-2 px-2.5 rounded-lg hover:bg-bg transition-colors">
+                <span className="font-mono text-[10px] text-inkSoft w-11 flex-shrink-0">{c.time}</span>
+                <span className="text-xs flex-1 truncate">{c.productName}</span>
+                {c.referrer && c.referrer !== 'direct' && (
+                  <span className="text-[9px] text-inkSoft bg-bg border border-border px-1.5 py-0.5 rounded-full flex-shrink-0">
+                    {c.referrer}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── DISPLAY MODE TOGGLE ── */}
