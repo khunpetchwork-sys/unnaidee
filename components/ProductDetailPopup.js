@@ -10,8 +10,6 @@ export default function ProductDetailPopup({ product, images, categoryName, onCl
     ? images
     : product.image_url ? [{ image_url: product.image_url }] : [];
 
-  const hasDiscount = product.discount_price && product.price && product.discount_price < product.price;
-  const displayPrice = hasDiscount ? product.discount_price : product.price;
   const clickHref = `/api/click?product=${product.id}&url=${encodeURIComponent(product.shopee_url)}`;
 
   function next(e) { e?.stopPropagation(); setImgIndex((i) => (i + 1) % gallery.length); }
@@ -85,19 +83,9 @@ export default function ProductDetailPopup({ product, images, categoryName, onCl
         <div className="flex-1 overflow-y-auto px-5 pt-4 pb-1 min-h-0">
           {categoryName && <div className="font-mono text-[10px] uppercase tracking-wide text-inkSoft mb-1">{categoryName}</div>}
           <h2 className="font-semibold text-[17px] leading-snug mb-2">{product.name}</h2>
-          {displayPrice != null && (
-            <div className="flex items-baseline gap-2 mb-3">
-              <span className="font-mono text-2xl font-bold text-coral">฿{Number(displayPrice).toLocaleString()}</span>
-              {hasDiscount && (
-                <>
-                  <span className="font-mono text-sm text-inkSoft line-through">฿{Number(product.price).toLocaleString()}</span>
-                  <span className="bg-ink text-white font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded-md">
-                    -{Math.round((1 - product.discount_price / product.price) * 100)}%
-                  </span>
-                </>
-              )}
-            </div>
-          )}
+          <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 bg-coralDim border border-coral/30 rounded-full">
+            <span className="font-mono text-[11px] text-coral font-medium">ดูราคาล่าสุดได้ใน Shopee</span>
+          </div>
           {product.description && (
             <p className="text-sm text-inkSoft leading-relaxed whitespace-pre-line mb-2">{product.description}</p>
           )}
@@ -105,8 +93,8 @@ export default function ProductDetailPopup({ product, images, categoryName, onCl
 
         {/* Footer sticky */}
         <div className="flex-shrink-0 px-5 pt-3 pb-5 border-t border-border bg-white rounded-b-2xl flex flex-col gap-2">
-          <a href={clickHref} className="flex items-center justify-center gap-2 bg-ink hover:bg-coral text-white text-sm font-semibold py-3.5 rounded-xl transition-colors">
-            ไปที่ Shopee →
+          <a href={clickHref} className="flex items-center justify-center gap-2 bg-coral hover:bg-[#C04D2C] text-white text-sm font-semibold py-3.5 rounded-xl transition-colors">
+            ดูราคา →
           </a>
           <button onClick={onClose} className="flex items-center justify-center text-inkSoft text-sm py-2 hover:text-ink transition-colors">
             ✕ ปิด และดูสินค้าอื่น
