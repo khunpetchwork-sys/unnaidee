@@ -8,6 +8,11 @@ export const revalidate = 60; // cache 60 วินาที — เร็วข
 export const metadata = {
   title: 'Unnaidee — ของดีที่แนะนำ',
   description: 'คัดของดีจาก Shopee มาให้แล้ว ใช้จริง รู้จริง',
+  openGraph: {
+    title: 'Unnaidee',
+    description: 'คัดของดีจาก Shopee มาให้แล้ว ใช้จริง รู้จริง',
+    images: ['/icon.png'],
+  },
 };
 
 const SOCIALS = [
