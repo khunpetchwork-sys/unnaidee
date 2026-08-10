@@ -6,9 +6,6 @@ import ProductDetailPopup from './ProductDetailPopup';
 
 export default function ProductCard({ product, categoryName, displayMode = 'grid', images = [] }) {
   const [showDetail, setShowDetail] = useState(false);
-
-  const hasDiscount = product.discount_price && product.price && product.discount_price < product.price;
-  const displayPrice = hasDiscount ? product.discount_price : product.price;
   const clickHref = `/api/click?product=${product.id}&url=${encodeURIComponent(product.shopee_url)}`;
 
   if (displayMode === 'list') {
@@ -30,11 +27,9 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
             <div onClick={() => setShowDetail(true)} className="text-[13px] font-semibold leading-snug truncate cursor-pointer hover:text-coral transition-colors">
               {product.name}
             </div>
-            <div className="flex items-center gap-1.5 mt-1">
-              {displayPrice != null && <span className="font-mono text-[12px] font-semibold text-coral">฿{Number(displayPrice).toLocaleString()}</span>}
-              {hasDiscount && <span className="font-mono text-[10px] text-inkSoft line-through">฿{Number(product.price).toLocaleString()}</span>}
-              {product.is_hit && <span className="font-mono text-[9px] text-coral border border-dashed border-coral rounded-full px-1.5 py-0.5 ml-1">ฮิต</span>}
-            </div>
+            {product.is_hit && (
+              <span className="font-mono text-[9px] text-coral border border-dashed border-coral rounded-full px-1.5 py-0.5 mt-1 inline-block">ฮิต</span>
+            )}
           </div>
           <div className="flex flex-col gap-1 flex-shrink-0 items-end">
             <button onClick={() => setShowDetail(true)} className="text-[9px] text-inkSoft hover:text-ink border border-border rounded-full px-2 py-0.5 transition-colors whitespace-nowrap">
@@ -68,11 +63,6 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
               <div className="absolute inset-0 flex items-center justify-center text-4xl">📦</div>
             )}
 
-            {hasDiscount && (
-              <span className="absolute top-2 left-2 z-10 bg-ink text-white font-mono text-[10.5px] font-semibold px-1.5 py-0.5 rounded-md">
-                -{Math.round((1 - product.discount_price / product.price) * 100)}%
-              </span>
-            )}
             <span className="absolute top-2 right-2 z-10 bg-white/90 text-ink text-[9px] font-semibold px-2 py-1 rounded-full shadow-sm">
               🔍 ดูข้อมูล
             </span>
@@ -91,17 +81,19 @@ export default function ProductCard({ product, categoryName, displayMode = 'grid
 
         <div className="p-3 flex flex-col gap-2 flex-1">
           {categoryName && <div className="font-mono text-[10px] uppercase tracking-wide text-inkSoft">{categoryName}</div>}
-          <h3 onClick={() => setShowDetail(true)} className="text-[13.5px] font-semibold leading-snug cursor-pointer hover:text-coral transition-colors">
+          <h3
+            onClick={() => setShowDetail(true)}
+            className="text-[13.5px] font-semibold leading-snug cursor-pointer hover:text-coral transition-colors line-clamp-2 flex-1"
+            style={{ minHeight: "2.6em" }}
+          >
             {product.name}
           </h3>
-          {displayPrice != null && (
-            <div className="flex items-baseline gap-1.5 mt-auto">
-              <span className="font-mono text-[15px] font-semibold text-coral">฿{Number(displayPrice).toLocaleString()}</span>
-              {hasDiscount && <span className="font-mono text-[11px] text-inkSoft line-through">฿{Number(product.price).toLocaleString()}</span>}
-            </div>
-          )}
-          <a href={clickHref} className="flex items-center justify-center gap-1.5 bg-ink hover:bg-coral text-white text-[12.5px] font-medium py-2.5 rounded-lg transition-colors mt-1">
-            ไปที่ Shopee →
+          {/* ปุ่มเด่นขึ้น เพราะเป็นจุดสนใจหลักในการ์ด ไม่มีราคาแย่งซีนแล้ว */}
+          <a
+            href={clickHref}
+            className="flex items-center justify-center gap-1.5 bg-coral hover:bg-[#C04D2C] text-white text-[13px] font-semibold py-3 rounded-lg transition-colors mt-1"
+          >
+            ดูราคา →
           </a>
         </div>
       </div>
